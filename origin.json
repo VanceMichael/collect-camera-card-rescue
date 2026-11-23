@@ -1,0 +1,22 @@
+{
+  "title": "高原相机换卡时的原片救回与接班",
+  "sources": [
+    "/stations/cards.csv",
+    "/camera/index.json",
+    "/camera/rotated.json",
+    "/frames/e14.txt",
+    "/frames/e29.txt",
+    "/frames/e32.txt",
+    "/frames/e15.txt",
+    "/archive/inbox.json",
+    "/crew/route.json",
+    "/crew/transport.json"
+  ],
+  "forms": [],
+  "range_sources": [
+    "/frames/e14.txt",
+    "/frames/e29.txt",
+    "/frames/e32.txt",
+    "/frames/e15.txt"
+  ]
+}

@@ -1,0 +1,5 @@
+time,station,generation,serial,source_generation
+2,R1,G8,C21,
+29,R1,G9,C29,
+31,R2,G7,C21,G8
+5,R2,G6,C30,
