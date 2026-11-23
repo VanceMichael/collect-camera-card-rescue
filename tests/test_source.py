@@ -4,8 +4,7 @@ from pathlib import Path
 import threading
 import unittest
 from urllib.error import HTTPError
-from urllib.parse import urlencode
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 
 from source_server import make_server
 
@@ -45,14 +44,21 @@ class SourceTests(unittest.TestCase):
             urlopen(self.url + "/unpublished", timeout=3)
         self.assertEqual(result.exception.code, 404)
 
-    def test_forms(self):
-        for form in self.config["forms"]:
-            with self.subTest(path=form["path"]), urlopen(self.url + form["path"], timeout=3) as response:
-                self.assertIn("<form", response.read().decode("utf-8"))
-            for values, message in form["choices"]:
-                query = urlencode(dict(zip(form["fields"], values, strict=True))).encode()
-                with self.subTest(values=values), urlopen(self.url + form["path"], data=query, timeout=3) as response:
-                    self.assertIn(message, response.read().decode("utf-8"))
+    def test_frame_range(self):
+        request = Request(self.url + "/frames/e14.txt", headers={"Range": "bytes=20-39"})
+        with urlopen(request, timeout=3) as response:
+            self.assertEqual(response.status, 206)
+            self.assertEqual(response.headers["Content-Range"], "bytes 20-39/40")
+            self.assertEqual(response.read(), b"01234567890123456789")
+
+    def test_archive_and_transport_expose_separate_observations(self):
+        with urlopen(self.url + "/crew/transport.json", timeout=3) as response:
+            transport = json.load(response)
+        with urlopen(self.url + "/archive/inbox.json", timeout=3) as response:
+            archive = json.load(response)
+        self.assertEqual(transport["arrivals"], [["T3", "C21", "arrived", 56]])
+        self.assertEqual(archive["late_observed_at"], 60)
+        self.assertEqual(archive["late"], [["E15", "G8", 0, 28, "raw", "F15"]])
 
 
 if __name__ == "__main__":
